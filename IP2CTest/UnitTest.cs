@@ -7,6 +7,7 @@ using System.Text;
 using IP2C.Net;
 using System.Collections.Generic;
 using System.Linq;
+using IP2C.SDK;
 
 namespace IP2CTest
 {
@@ -38,6 +39,19 @@ namespace IP2CTest
             var name = finder.GetCountryName("168.95.1.1");
             Assert.AreEqual(name, "Taiwan; Republic of China (ROC)");
         }
+
+
+        //[TestMethod]
+        //public void SDKFindTest()
+        //{
+        //    var client = new Client(new Uri("http://localhost:62676/"));
+
+        //    Assert.AreEqual(client.FindIPCountry("168.95.1.1").CountryCode, "TW");
+        //    Assert.AreEqual(client.FindIPCountry("168.95.1.1").CountryCode, "TW");
+        //    Assert.AreEqual(client.FindIPCountry("168.95.1.1").CountryCode, "TW");
+        //    Assert.AreEqual(client.FindIPCountry("168.95.1.1").CountryCode, "TW");
+        //    Assert.AreEqual(client.FindIPCountry("168.95.1.1").CountryCode, "TW");
+        //}
 
         [TestMethod]
         public void ResultCheck()
@@ -78,6 +92,8 @@ Average ={(double)sw.ElapsedMilliseconds / lines.Count():n2}ms");
                 }
             }
         }
+
+        
 
     }
 }
