@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,8 +16,14 @@ namespace IP2C.Worker
     {
         static void Main(string[] args)
         {
+            bool isWatchMode = true;
+            string filepath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                "data\\ipdb.csv");
+
+
             //if (args.Length > 0 && args[0] == "--watch")
-            if (true)
+            if (isWatchMode)
             {
                 // watch mode
                 DateTime start = new DateTime(2000, 1, 1, 15, 40, 0);
@@ -28,14 +35,14 @@ namespace IP2C.Worker
                     TimeSpan wait = TimeSpan.FromMilliseconds(period.TotalMilliseconds - (DateTime.Now - start).TotalMilliseconds % period.TotalMilliseconds);
                     Console.WriteLine("wait: {0} (until: {1})", wait, DateTime.Now.Add(wait));
                     Task.Delay(wait).Wait();
-                    UpdateFile(@"http://software77.net/geo-ip/?DL=1", @"d:\ip2c.csv");
+                    UpdateFile(@"http://software77.net/geo-ip/?DL=1", filepath);
                 }
                 
             }
             else
             {
                 // update once
-                UpdateFile(@"http://software77.net/geo-ip/?DL=1", @"d:\ip2c.csv");
+                UpdateFile(@"http://software77.net/geo-ip/?DL=1", filepath);
             }
         }
 
@@ -50,6 +57,11 @@ namespace IP2C.Worker
 
             string temp = Path.ChangeExtension(file, ".temp");
             string back = Path.ChangeExtension(file, ".bak");
+
+            if (Directory.Exists(Path.GetDirectoryName(file)) == false)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(file));
+            }
 
             if (File.Exists(temp)) File.Delete(temp);
 

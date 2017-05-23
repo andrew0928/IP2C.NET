@@ -15,6 +15,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IP2C.Contracts", "IP2C.Cont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IP2C.SDK", "IP2C.SDK\IP2C.SDK.csproj", "{876B7192-07E4-43FA-97F7-D147E39F4E0E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0ADF941-DD49-46DD-99BD-2B0B67B6A8F5}"
+	ProjectSection(SolutionItems) = preProject
+		build.cmd = build.cmd
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

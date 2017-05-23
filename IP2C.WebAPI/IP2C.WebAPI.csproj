@@ -90,10 +90,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="packages.config" />
-    <Content Include="App_Data\IpToCountry.csv">
+    <Content Include="App_Data\ipdb.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Project_Readme.html" />

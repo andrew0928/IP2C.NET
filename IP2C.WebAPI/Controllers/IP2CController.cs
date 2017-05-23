@@ -52,7 +52,7 @@ namespace IP2C.WebAPI.Controllers
             IPCountryFinder result = MemoryCache.Default.Get(cachekey) as IPCountryFinder;
             if (result == null)
             {
-                string filepath = HostingEnvironment.MapPath("~/App_Data/IpToCountry.csv");
+                string filepath = HostingEnvironment.MapPath("~/App_Data/ipdb.csv");
 
                 var cip = new CacheItemPolicy();
                 cip.ChangeMonitors.Add(new HostFileChangeMonitor(new List<string> { filepath }));

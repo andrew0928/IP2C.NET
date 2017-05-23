@@ -1,0 +1,7 @@
+﻿FROM microsoft/aspnet
+
+WORKDIR c:/inetpub/wwwroot/
+COPY . .
+
+EXPOSE 80
+VOLUME ["c:/inetpub/wwwroot/App_Data"]
