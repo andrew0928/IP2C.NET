@@ -21,10 +21,24 @@ namespace IP2C.Worker
                 Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
                 "data\\ipdb.csv");
 
+            if (Directory.Exists(Path.GetDirectoryName(filepath)) == false)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+            }
 
             //if (args.Length > 0 && args[0] == "--watch")
             if (isWatchMode)
             {
+                // 確認初始狀態下有無既有的檔案? 如果沒有先用預設的資料庫
+                if (File.Exists(filepath) == false)
+                {
+                    Console.WriteLine("ipdb.csv not exist. use default database instead.");
+                    File.Copy("default-ipdb.csv", "data\\ipdb.csv");
+                }
+
+
+
+
                 // watch mode
                 DateTime start = new DateTime(2000, 1, 1, 15, 40, 0);
                 TimeSpan period = //TimeSpan.FromHours(1.0);
@@ -32,6 +46,8 @@ namespace IP2C.Worker
 
                 while (true)
                 {
+                    // todo: 預設實作, 等待指定的時間到了後就醒來執行 UpdateFile( ) 任務。
+                    // 追加 listen message queue 的通知，若有來自控制中心的啟動訊號，則立即執行 update, 不需等到下一次週期。
                     TimeSpan wait = TimeSpan.FromMilliseconds(period.TotalMilliseconds - (DateTime.Now - start).TotalMilliseconds % period.TotalMilliseconds);
                     Console.WriteLine("wait: {0} (until: {1})", wait, DateTime.Now.Add(wait));
                     Task.Delay(wait).Wait();
