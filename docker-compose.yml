@@ -2,15 +2,17 @@ version: '2.1'
 services:
   webapi:
     image: ip2c/webapi
-#    hostname: api
+#    hostname: webapi
 #    domainname: msa.local
+#    deploy:
+#      replicas: 3
     volumes:
       - ipinfo_data:c:/inetpub/wwwroot/app_data
 #    ports:
 #      - 8001:80
 #    networks: 
 #      - docker-nat
-
+      
   worker:
     image: ip2c/worker
 #    hostname: worker
@@ -23,15 +25,13 @@ services:
 #    networks: 
 #      - docker-nat
 
-#  proxy:
-#    build: ./IP2C.ReverseProxy
+  proxy:
+    build: ./IP2C.ReverseProxy
 #    ports:
-#      - 8000:80
-#    networks:
-#      - docker-nat
-
-
-
+#      - 80:80
+    networks:
+      default:
+        ipv4_address: 172.24.225.100
 
 
 volumes:
@@ -39,6 +39,9 @@ volumes:
 #  ipinfo_logs:
 
 networks:
+  default:
+    external:
+      name: nat
 #  front:
 #    driver: transparent
 #    enable_ipv6: false
@@ -46,6 +49,3 @@ networks:
 #      driver: default
 #      config:
 #        - subnet: 172.19.3.0/24
-  default:
-    external:
-      name: docker-nat
