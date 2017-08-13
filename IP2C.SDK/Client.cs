@@ -70,5 +70,13 @@ namespace IP2C.SDK
     {
         public string CountryName { get; set; }
         public string CountryCode { get; set; }
+        public ServerInfo ServerInfo { get; set; }
+    }
+
+    public class ServerInfo
+    {
+        public string ClientAddress { get; set; }
+        public string ServerAddress { get; set; }
+        public string Version { get; set; }
     }
 }

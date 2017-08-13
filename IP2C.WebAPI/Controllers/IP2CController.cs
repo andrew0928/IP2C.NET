@@ -24,7 +24,12 @@ namespace IP2C.WebAPI.Controllers
             return new
             {
                 CountryName = ipcf.ConvertCountryCodeToName(countryCode),
-                CountryCode = countryCode
+                CountryCode = countryCode,
+                ServerInfo = new {
+                    ClientAddress = System.Web.HttpContext.Current.Request.UserHostAddress,
+                    ServerAddress = System.Web.HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"],
+                    Version = this.GetType().Assembly.GetName().Version.ToString()
+                }
             };
         }
 
