@@ -13,14 +13,14 @@ Tools\nuget.exe restore
 : build webapi docker image
 pushd .
 cd IP2C.WebAPI\obj\Release\Package\PackageTmp
-docker build -t ip2c/webapi:latest .
+docker build -t ip2c/webapi:latest -t ip2c/webapi:%BUILD_VERSION% .
 popd
 
 
 : build worker docker image
 pushd .
 cd IP2C.Worker\bin\Release
-docker build -t ip2c/worker:latest .
+docker build -t ip2c/worker:latest -t ip2c/worker:%BUILD_VERSION% .
 popd
 
 
