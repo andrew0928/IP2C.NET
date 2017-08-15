@@ -1,5 +1,5 @@
 : configuration
-SET BUILD_VERSION=1.1.0
+SET BUILD_VERSION=2.0.0
 
 
 : init
