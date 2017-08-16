@@ -15,15 +15,16 @@ services:
     image: wcshub.azurecr.io/ip2c.proxy:latest
     ports:
       - 80:80
-    networks:
-      default:
-        ipv4_address: 172.24.225.100
+#    networks:
+#      default:
+#        ipv4_address: 172.24.225.100
+#        ipv4_address: 172.17.16.100
 
 volumes:
   ipinfo_data:
 #  ipinfo_logs:
 
-networks:
-  default:
-    external:
-      name: nat
+#networks:
+#  default:
+#    external:
+#      name: nat
