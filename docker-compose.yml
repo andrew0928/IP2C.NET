@@ -3,12 +3,12 @@ services:
   webapi:
     image: wcshub.azurecr.io/ip2c.webapi:latest
     volumes:
-      - ipinfo_data:c:/inetpub/wwwroot/app_data
+      - ./data/:c:/inetpub/wwwroot/app_data
       
   worker:
     image: wcshub.azurecr.io/ip2c.worker:latest
     volumes:
-      - ipinfo_data:c:/IP2C.Worker/data
+      - ./data/:c:/IP2C.Worker/data
 
   proxy:
 #    build: ./IP2C.ReverseProxy
@@ -20,9 +20,9 @@ services:
 #        ipv4_address: 172.24.225.100
 #        ipv4_address: 172.17.16.100
 
-volumes:
-  ipinfo_data:
-#  ipinfo_logs:
+#volumes:
+#  - ipinfo_data:./data
+#  - ipinfo_logs:./logs
 
 #networks:
 #  default:

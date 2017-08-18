@@ -6,5 +6,4 @@ COPY . .
 
 VOLUME ["c:/IP2C.Worker/data"]
 
-# $(ENV) 不能用在 ENTRYPOINT 上面
 ENTRYPOINT IP2C.Worker.exe --watch c:\IP2C.Worker\data\ipdb.csv

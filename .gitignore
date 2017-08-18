@@ -301,3 +301,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+/data/ipdb.temp
+/data/ipdb.csv
+/data/ipdb.bak
