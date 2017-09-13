@@ -13,18 +13,22 @@ Tools\nuget.exe restore
 : build webapi docker image
 pushd .
 cd IP2C.WebAPI\obj\Release\Package\PackageTmp
+
 docker build -t wcshub.azurecr.io/ip2c.webapi:latest -t wcshub.azurecr.io/ip2c.webapi:%BUILD_VERSION% .
 docker push wcshub.azurecr.io/ip2c.webapi:%BUILD_VERSION%
 docker push wcshub.azurecr.io/ip2c.webapi:latest
+
 popd
 
 
 : build worker docker image
 pushd .
 cd IP2C.Worker\bin\Release
+
 docker build -t wcshub.azurecr.io/ip2c.worker:latest -t wcshub.azurecr.io/ip2c.worker:%BUILD_VERSION% .
 docker push wcshub.azurecr.io/ip2c.worker:%BUILD_VERSION%
 docker push wcshub.azurecr.io/ip2c.worker:latest
+
 popd
 
 
