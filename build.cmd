@@ -1,5 +1,5 @@
 : configuration
-SET BUILD_VERSION=3.0.0
+SET BUILD_VERSION=3.1.0
 
 
 : init
@@ -34,7 +34,7 @@ popd
 
 pushd .
 cd IP2CTest.Console\bin\Release
-docker build -t wcshub.azurecr.io/ip2c.console:latest -t wcshub.azurecr.io/ip2c.worker:%BUILD_VERSION% .
+docker build -t wcshub.azurecr.io/ip2c.console:latest -t wcshub.azurecr.io/ip2c.console:%BUILD_VERSION% .
 docker push wcshub.azurecr.io/ip2c.console:%BUILD_VERSION%
 docker push wcshub.azurecr.io/ip2c.console:latest
 popd

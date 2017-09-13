@@ -13,7 +13,7 @@ namespace IP2C.SDK
     {
         private HttpClient _connection = null;
 
-        private Version RequiredServerVersion = new Version(3, 0, 0, 0);
+        private Version RequiredServerVersion = new Version(3, 1, 0, 0);
 
         public Client(Uri serviceURL)
         {
