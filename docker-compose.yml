@@ -1,30 +1,33 @@
 version: '2.1'
 services:
   webapi:
-    image: wcshub.azurecr.io/ip2c.webapi:latest
+    image: wcshub.azurecr.io/ip2c.webapi:2.1.2
     volumes:
-      - ipinfo_data:c:/inetpub/wwwroot/app_data
+      - ./data:c:/inetpub/wwwroot/app_data
       
   worker:
     image: wcshub.azurecr.io/ip2c.worker:latest
     volumes:
-      - ipinfo_data:c:/IP2C.Worker/data
+      - ./data:c:/IP2C.Worker/data
+
+  console:
+    image: wcshub.azurecr.io/ip2c.console:latest
 
   proxy:
 #    build: ./IP2C.ReverseProxy
     image: wcshub.azurecr.io/ip2c.proxy:latest
     ports:
       - 80:80
-#    networks:
-#      default:
-#        ipv4_address: 172.24.225.100
+    networks:
+      default:
+        ipv4_address: 172.24.225.100
 #        ipv4_address: 172.17.16.100
 
-volumes:
-  ipinfo_data:
+#volumes:
+#  ipinfo_data:
 #  ipinfo_logs:
 
-#networks:
-#  default:
-#    external:
-#      name: nat
+networks:
+  default:
+    external:
+      name: nat

@@ -13,6 +13,13 @@ namespace IP2C.WebAPI.Controllers
 {
     public class IP2CController : ApiController
     {
+        // GET api/values
+        public string Get()
+        {
+            return this.GetType().Assembly.GetName().Version.ToString();
+        }
+
+
         // GET api/values/5
         public object Get(uint id)
         {

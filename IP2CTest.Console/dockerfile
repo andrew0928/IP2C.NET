@@ -1,0 +1,6 @@
+﻿FROM microsoft/dotnet-framework:latest
+
+WORKDIR   c:/IP2C.Console
+COPY . .
+
+ENTRYPOINT ping -t localhost

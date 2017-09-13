@@ -13,10 +13,23 @@ namespace IP2C.SDK
     {
         private HttpClient _connection = null;
 
+        private Version RequiredServerVersion = new Version(3, 0, 0, 0);
+
         public Client(Uri serviceURL)
         {
             this._connection = new HttpClient();
             this._connection.BaseAddress = serviceURL;
+
+            {
+                // 從 3.0.0.0 開始支援 /api/ip2c 這個 API, 會傳回 server version number
+
+                string result = JsonConvert.DeserializeObject<string>(this._connection.GetStringAsync("/api/ip2c").Result);
+                Version serverVersion = Version.Parse(result);
+                if (serverVersion.Major != this.RequiredServerVersion.Major || serverVersion.Minor < this.RequiredServerVersion.Minor)
+                {
+                    throw new InvalidOperationException("server version not match the minimal requirement.");
+                }
+            }
         }
 
         public void Dispose()
