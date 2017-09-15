@@ -22,17 +22,11 @@ namespace IP2CTest.Console
                 var p = line.Split(',');
                 if (string.IsNullOrEmpty(p[1])) p[1] = "--";
 
-                var code1 = _client.FindIPCountry(p[0]).CountryCode;
+                var result = _client.FindIPCountry(p[0]);
 
-                Assert_AreEqual(code1, p[1]);
+                System.Console.WriteLine($"Expect: {result.CountryCode}, Actual: {p[1]}, ServerInfo: {result.ServerInfo.ServerAddress}, {result.ServerInfo.Version}");
             }
 
-        }
-
-        static void Assert_AreEqual(string expected, string actual)
-        {
-            string result = (expected != actual) ? "FAIL" : "PASS";
-            System.Console.WriteLine($"[{result}]: Excected ({expected}), but ({actual})!");
         }
     }
 }

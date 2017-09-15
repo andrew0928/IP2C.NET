@@ -27,7 +27,7 @@ namespace IP2C.SDK
                 Version serverVersion = Version.Parse(result);
                 if (serverVersion.Major != this.RequiredServerVersion.Major || serverVersion.Minor < this.RequiredServerVersion.Minor)
                 {
-                    throw new InvalidOperationException("server version not match the minimal requirement.");
+                    throw new InvalidOperationException($"server version not match the minimal requirement. (required: {this.RequiredServerVersion}, actual: {serverVersion})");
                 }
             }
         }
