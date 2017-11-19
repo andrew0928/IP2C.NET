@@ -43,9 +43,18 @@ namespace IP2C.WebAPI.Controllers
                     }
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return ex;
+                return new {
+                    ServerInfo = new
+                    {
+                        ClientAddress = System.Web.HttpContext.Current.Request.UserHostAddress,
+                        ServerAddress = System.Web.HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"],
+                        Version = this.GetType().Assembly.GetName().Version.ToString(),
+                        QueryTime = DateTime.Now.ToString("s")
+                    },
+                    Exception = ex
+                };
             }
         }
 
