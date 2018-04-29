@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -19,9 +20,8 @@ namespace IP2C.WebAPI.Controllers
             return this.GetType().Assembly.GetName().Version.ToString();
         }
 
-
         // GET api/values/5
-        public object Get(uint id)
+        public GetResult Get(uint id)
         {
             try
             {
@@ -30,14 +30,15 @@ namespace IP2C.WebAPI.Controllers
                 string ipv4 = this.ConvertIntToIpAddress(id);
                 string countryCode = ipcf.GetCountryCode(ipv4);
 
-                return new
+                return new GetResult()
                 {
                     CountryName = ipcf.ConvertCountryCodeToName(countryCode),
                     CountryCode = countryCode,
-                    ServerInfo = new
+                    ServerInfo = new GetResult_ServerInfo()
                     {
-                        ClientAddress = System.Web.HttpContext.Current.Request.UserHostAddress,
-                        ServerAddress = System.Web.HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"],
+                        
+                        ClientAddress = "0.0.0.0", //System.Web.HttpContext.Current.Request.UserHostAddress,
+                        ServerAddress = "0.0.0.0", //System.Web.HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"],
                         Version = this.GetType().Assembly.GetName().Version.ToString(),
                         QueryTime = DateTime.Now.ToString("s")
                     }
@@ -45,8 +46,9 @@ namespace IP2C.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return new {
-                    ServerInfo = new
+                return new GetResult()
+                {
+                    ServerInfo = new GetResult_ServerInfo()
                     {
                         ClientAddress = System.Web.HttpContext.Current.Request.UserHostAddress,
                         ServerAddress = System.Web.HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"],
@@ -82,7 +84,24 @@ namespace IP2C.WebAPI.Controllers
             IPCountryFinder result = MemoryCache.Default.Get(cachekey) as IPCountryFinder;
             if (result == null)
             {
-                string filepath = HostingEnvironment.MapPath("~/App_Data/ipdb.csv");
+                string filepath = null;
+
+                if (string.IsNullOrEmpty(filepath))
+                {
+                    filepath = HostingEnvironment.MapPath("~/App_Data/ipdb.csv");
+                }
+
+                if (string.IsNullOrEmpty(filepath))
+                {
+                    filepath = Path.Combine(
+                        Path.GetDirectoryName(this.GetType().Assembly.Location),
+                        "ipdb.csv");
+                }
+
+                if (string.IsNullOrEmpty(filepath) || File.Exists(filepath) == false)
+                {
+                    throw new FileNotFoundException("IPDB.csv file not found.", filepath);
+                }
 
                 try
                 {
@@ -109,5 +128,27 @@ namespace IP2C.WebAPI.Controllers
 
             return result;
         }
+
+
+
+
+
+        public class GetResult
+        {
+            public string CountryName;
+            public string CountryCode;
+            public GetResult_ServerInfo ServerInfo;
+
+            public Exception Exception;
+        }
+
+        public class GetResult_ServerInfo
+        {
+            public string ClientAddress;
+            public string ServerAddress;
+            public string Version;
+            public string QueryTime;
+        }
+
     }
 }

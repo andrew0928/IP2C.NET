@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2011
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IP2C.NET", "IP2C.NET\IP2C.NET.csproj", "{76630D12-8D83-4B59-B8D6-99F930C153E2}"
 EndProject
@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IP2CTest.Console", "IP2CTest.Console\IP2CTest.Console.csproj", "{AF017B0F-2C0F-46E9-B927-8D554D205F37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IP2C.WebAPI.SelfHost", "IP2C.WebAPI.SelfHost\IP2C.WebAPI.SelfHost.csproj", "{8CF52D56-3D6B-437F-8C86-0931C3F30C75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,8 +54,15 @@ Global
 		{AF017B0F-2C0F-46E9-B927-8D554D205F37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF017B0F-2C0F-46E9-B927-8D554D205F37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF017B0F-2C0F-46E9-B927-8D554D205F37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CF52D56-3D6B-437F-8C86-0931C3F30C75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CF52D56-3D6B-437F-8C86-0931C3F30C75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CF52D56-3D6B-437F-8C86-0931C3F30C75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CF52D56-3D6B-437F-8C86-0931C3F30C75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C72533D-1B79-47A2-BB93-19B52D5C4166}
 	EndGlobalSection
 EndGlobal
