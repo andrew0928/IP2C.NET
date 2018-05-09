@@ -1,33 +1,26 @@
 version: '2.1'
 services:
+
+  consul:
+    image: wcshub.azurecr.io/ip2c.consul:latest
+
   webapi:
-    image: wcshub.azurecr.io/ip2c.webapi:latest
-    volumes:
-      - ./data:c:/inetpub/wwwroot/app_data
-      
-  worker:
-    image: wcshub.azurecr.io/ip2c.worker:latest
-    volumes:
-      - ./data:c:/IP2C.Worker/data
+    image: wcshub.azurecr.io/ip2c.webapi.selfhost:latest
+    environment:
+      - CONSUL_URL="http://consul:8500"
+      - NETWORK="0.0.0.0/0"
+    depends_on:
+      - consul
 
   console:
     image: wcshub.azurecr.io/ip2c.console:latest
+    environment:
+      - CONSUL_URL="http://consul:8500"
+    depends_on:
+      - consul
+      - webapi
 
-  proxy:
-#    build: ./IP2C.ReverseProxy
-    image: wcshub.azurecr.io/ip2c.proxy:latest
-    ports:
-      - 80:80
-#    networks:
-#      default:
-#        ipv4_address: 172.24.225.100
-#        ipv4_address: 172.17.16.100
-
-#volumes:
-#  - ipinfo_data:./data
-#  - ipinfo_logs:./logs
-
-#networks:
-#  default:
-#    external:
-#      name: nat
+networks:
+  default:
+    external:
+      name: nat

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Consul;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +12,22 @@ namespace IP2C.SDK
 {
     public class Client : IDisposable
     {
-        private HttpClient _connection = null;
+        //private HttpClient _connection = null;
 
         private Version RequiredServerVersion = new Version(3, 1, 0, 0);
 
-        public Client(Uri serviceURL)
+        private readonly string IP2CServiceName = "IP2CAPI";
+
+        public Client()
         {
-            this._connection = new HttpClient();
-            this._connection.BaseAddress = serviceURL;
+            //this._connection = new HttpClient();
+            //this._connection.BaseAddress = serviceURL;
 
             {
                 // 從 3.0.0.0 開始支援 /api/ip2c 這個 API, 會傳回 server version number
 
-                string result = JsonConvert.DeserializeObject<string>(this._connection.GetStringAsync("/api/ip2c").Result);
+                var http = ServiceClient.GetServiceHttpClient(this.IP2CServiceName);
+                string result = JsonConvert.DeserializeObject<string>(http.GetStringAsync("/api/ip2c").Result);
                 Version serverVersion = Version.Parse(result);
                 if (serverVersion.Major != this.RequiredServerVersion.Major || serverVersion.Minor < this.RequiredServerVersion.Minor)
                 {
@@ -34,10 +38,10 @@ namespace IP2C.SDK
 
         public void Dispose()
         {
-            if (this._connection != null)
-            {
-                this._connection.Dispose();
-            }
+            //if (this._connection != null)
+            //{
+            //    this._connection.Dispose();
+            //}
         }
 
         public CountryInfo FindIPCountry(string ipv4_address)
@@ -73,9 +77,17 @@ namespace IP2C.SDK
 
         private CountryInfo FindIPCountryWithoutCache(uint ipv4_value)
         {
-            string result = this._connection.GetStringAsync(string.Format("/api/ip2c/{0}", ipv4_value)).Result;
+            string result = //this._connection.GetStringAsync(string.Format("/api/ip2c/{0}", ipv4_value)).Result;
+                ServiceClient.GetServiceHttpClient(this.IP2CServiceName).GetStringAsync($"/api/ip2c/{ipv4_value}").Result;
             return JsonConvert.DeserializeObject<CountryInfo>(result);
         }
+
+
+
+
+
+
+
     }
 
 
@@ -91,5 +103,51 @@ namespace IP2C.SDK
         public string ClientAddress { get; set; }
         public string ServerAddress { get; set; }
         public string Version { get; set; }
+    }
+
+    public class ServiceClient
+    {
+        public static string ConsulAddress
+        {
+            get;
+            private set;
+        }
+
+        public static void Init(string consulAddress)
+        {
+            ConsulAddress = consulAddress;
+
+        }
+
+        public static HttpClient GetServiceHttpClient(string serviceName)
+        {
+            // ToDo: add cache
+            // ToDo: reuse httpclient for the same service instance
+
+            using (ConsulClient consul = new ConsulClient(c => { if (!string.IsNullOrEmpty(ConsulAddress)) c.Address = new Uri(ConsulAddress); }))
+            //using (ConsulClient consul = new ConsulClient())
+            {
+                var result = consul.Health.Service(serviceName).Result.Response;
+
+                if (result.Count() == 0)
+                {
+                    throw new Exception($"找不到服務: {serviceName}.");
+                }
+
+                var list = (from x in result where x.Checks.AggregatedStatus().Status == "passing" select x).ToList();
+
+                if (list == null || list.Count == 0)
+                {
+                    throw new Exception($"Service: {serviceName} was not found.");
+                }
+
+                Random rnd = new Random();
+                int index = rnd.Next(list.Count);
+                return new HttpClient()
+                {
+                    BaseAddress = new Uri(list[index].Service.Address) //new Uri($"http://{list[index].Service.Address}:{list[index].Service.Port}")
+                };
+            }
+        }
     }
 }

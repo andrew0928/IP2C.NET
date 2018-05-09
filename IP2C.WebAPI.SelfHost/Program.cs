@@ -21,9 +21,9 @@ namespace IP2C.WebAPI.SelfHost
     {
         static string GetLocalIPv4Address(string network =  null)
         {
-            // default network region settings: 10.0.0.0/8
-            byte[] net_id = new byte[] { 10, 0, 0, 0 };
-            byte[] net_mask = new byte[] { 255, 0, 0, 0 };
+            // default network region settings: 0.0.0.0/0
+            byte[] net_id = new byte[] { 0, 0, 0, 0 };
+            byte[] net_mask = new byte[] { 0, 0, 0, 0 };
 
 
             //
@@ -142,7 +142,7 @@ namespace IP2C.WebAPI.SelfHost
             }
 
             if (string.IsNullOrEmpty(baseAddress) && string.IsNullOrEmpty(local_ip)) local_ip = "127.0.0.1";
-            if (string.IsNullOrEmpty(baseAddress)) baseAddress = $"http://{local_ip}:9000/";
+            if (string.IsNullOrEmpty(baseAddress)) baseAddress = $"http://{local_ip}:80/";
             #endregion
 
             #region init windows shutdown handler
@@ -197,7 +197,7 @@ namespace IP2C.WebAPI.SelfHost
                             try
                             {
                                 var result = ip2c.Get(0x08080808);
-                                if (result.CountryCode == "USA")
+                                if (result.CountryCode == "US")
                                 {
                                     consul.Agent.PassTTL($"service:{serviceID}:2", $"self test pass.");
                                 }
@@ -221,6 +221,9 @@ namespace IP2C.WebAPI.SelfHost
 
                     // ServiceDiscovery.UnRegister()
                     consul.Agent.ServiceDeregister(serviceID).Wait();
+
+                    // wait 5 sec and shutdown owin host
+                    Task.Delay(5000).Wait();
                 }
             }
         }
@@ -247,37 +250,44 @@ namespace IP2C.WebAPI.SelfHost
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            config.Services.Replace(typeof(IAssembliesResolver), new MyNewAssembliesResolver());
+            // do nothing, just force app domain load controller's assembly
+            Console.WriteLine($"- Force load controller: {typeof(IP2CController)}");
+            Console.WriteLine($"- Force load controller: {typeof(DiagController)}");
+
+
+            //config.Services.Replace(typeof(IAssembliesResolver), new MyNewAssembliesResolver());
 
             appBuilder.UseWebApi(config);
         }
     }
 
-    public class MyNewAssembliesResolver : DefaultAssembliesResolver
-    {
-        public override ICollection<Assembly> GetAssemblies()
-        {
+    //public class MyNewAssembliesResolver : DefaultAssembliesResolver
+    //{
+    //    public override ICollection<Assembly> GetAssemblies()
+    //    {
+    //        Console.WriteLine($"Force load type: {typeof(IP2CController)}");
+    //        return base.GetAssemblies();
 
-            ICollection<Assembly> baseAssemblies = base.GetAssemblies();
-            baseAssemblies.Clear();
-            List<Assembly> assemblies = new List<Assembly>(baseAssemblies);
+    //        ICollection<Assembly> baseAssemblies = base.GetAssemblies();
+    //        baseAssemblies.Clear();
+    //        List<Assembly> assemblies = new List<Assembly>(baseAssemblies);
 
-            List<Type> controllers = new List<Type>()
-            {
-                typeof(IP2C.WebAPI.Controllers.IP2CController),
-                typeof(IP2C.WebAPI.Controllers.DiagController)
-            };
+    //        List<Type> controllers = new List<Type>()
+    //        {
+    //            typeof(IP2C.WebAPI.Controllers.IP2CController),
+    //            typeof(IP2C.WebAPI.Controllers.DiagController)
+    //        };
 
-            foreach (var controller in controllers)
-            {
-                var controllersAssembly = controller.Assembly; // Assembly.LoadFrom(@"Path_to_Controller_DLL");
-                if (baseAssemblies.Contains(controllersAssembly) == true) continue;
-                baseAssemblies.Add(controllersAssembly);
-            }
+    //        foreach (var controller in controllers)
+    //        {
+    //            var controllersAssembly = controller.Assembly; // Assembly.LoadFrom(@"Path_to_Controller_DLL");
+    //            if (baseAssemblies.Contains(controllersAssembly) == true) continue;
+    //            baseAssemblies.Add(controllersAssembly);
+    //        }
 
-            return baseAssemblies;
+    //        return baseAssemblies;
 
-        }
-    }
+    //    }
+    //}
 
 }

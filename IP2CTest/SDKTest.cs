@@ -19,8 +19,8 @@ namespace IP2CTest
         [TestInitialize]
         public void Init()
         {
-            this._client = 
-                new Client(new Uri(@"http://localhost:62676/"));
+            this._client = new Client();
+                //new Client(new Uri(@"http://localhost:62676/"));
                 //new Client(new Uri(@"http://172.24.225.100/"));
         }
 
