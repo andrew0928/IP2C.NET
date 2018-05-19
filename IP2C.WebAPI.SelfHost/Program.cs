@@ -1,4 +1,6 @@
-﻿using Consul;
+﻿#define DEMO
+
+using Consul;
 using IP2C.WebAPI.Controllers;
 using Microsoft.Owin.Hosting;
 using Owin;
@@ -14,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using System.Windows.Forms;
 
 namespace IP2C.WebAPI.SelfHost
 {
@@ -75,37 +78,6 @@ namespace IP2C.WebAPI.SelfHost
 
 
 
-        #region shutdown event handler
-        private static AutoResetEvent shutdown = new AutoResetEvent(false);
-
-        [DllImport("Kernel32")]
-        static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
-
-        delegate bool EventHandler(CtrlType sig);
-        //static EventHandler _handler;
-        enum CtrlType
-        {
-            CTRL_C_EVENT = 0,
-            CTRL_BREAK_EVENT = 1,
-            CTRL_CLOSE_EVENT = 2,
-            CTRL_LOGOFF_EVENT = 5,
-            CTRL_SHUTDOWN_EVENT = 6
-        }
-        private static bool ShutdownHandler(CtrlType sig)
-        {
-            //Console.WriteLine("Shutdown Console Apps...");
-            //brs.StopWorkers();
-            shutdown.Set();
-            Console.WriteLine($"Shutdown WebHost...");
-            return true;
-        }
-
-        //private static void WaitUntilShutdown()
-        //{
-        //    SetConsoleCtrlHandler(ShutdownHandler, true);
-        //    w.WaitOne();
-        //}
-        #endregion
 
 
 
@@ -147,21 +119,42 @@ namespace IP2C.WebAPI.SelfHost
 
             #region init windows shutdown handler
             SetConsoleCtrlHandler(ShutdownHandler, true);
-            Console.WriteLine($"* Press [CTRL-C] to exit WebAPI-SelfHost...");
+
+            _form = new HiddenForm()
+            {
+                ShowInTaskbar = false,
+                Visible = false,
+                WindowState = FormWindowState.Minimized
+            };
+
+            Task.Run(() =>
+            {
+                //Application.EnableVisualStyles();
+                //Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(_form);
+            });
+
+            Console.WriteLine($"Press [CTRL-C] to exit WebAPI-SelfHost...");
             #endregion
 
             // Start OWIN host 
-            Console.WriteLine($"Starting WebApp... (Bind URL: {baseAddress})");
+            Console.WriteLine($"INFO:  Starting WebApp... (Bind URL: {baseAddress})");
             using (WebApp.Start<Startup>(baseAddress))
             {
                 Console.WriteLine($"WebApp Started.");
+                // TODO: 服務啟動完成。註冊的相關程式碼可以放在這裡。
+
+
                 string serviceID = $"IP2CAPI-{Guid.NewGuid():N}".ToUpper(); //Guid.NewGuid().ToString("N");
 
                 // ServiceDiscovery.Register()
                 using (ConsulClient consul = new ConsulClient(c => { if (!string.IsNullOrEmpty(consulAddress)) c.Address = new Uri(consulAddress); }))
                 {
 
-                    #region register services
+#region register services
+#if (DEMO)
+                    Console.WriteLine($"DEMO:  Register Services Here!");
+#else
                     consul.Agent.ServiceRegister(new AgentServiceRegistration()
                     {
                         Name = "IP2CAPI",
@@ -182,13 +175,24 @@ namespace IP2C.WebAPI.SelfHost
                             }
                         }
                     }).Wait();
-                    #endregion
+#endif
+
+#endregion
 
 
-                    #region send heartbeats to consul
+#region send heartbeats to consul
                     bool stop = false;
                     Task heartbeats = Task.Run(() =>
                     {
+#if (DEMO)
+                        Console.WriteLine($"DEMO:  Start eartbeats.");
+                        while(stop == false)
+                        {
+                            Task.Delay(1000).Wait();
+                            Console.WriteLine($"DEMO:  Send Heartbeats every 1000 ms here!!");
+                        }
+                        Console.WriteLine($"DEMO:  Stop Heartbeats.");
+#else
                         IP2CController ip2c = new IP2CController();
                         while (stop == false)
                         {
@@ -211,22 +215,74 @@ namespace IP2C.WebAPI.SelfHost
                                 consul.Agent.FailTTL($"service:{serviceID}:2", $"self test error. exception: {ex}");
                             }
                         }
+#endif
                     });
+#endregion
+
 
                     // wait until process shutdown (ctrl-c, or close window)
-                    shutdown.WaitOne();
+                    int shutdown_index = WaitHandle.WaitAny(new WaitHandle[]
+                    {
+                        close,
+                        _form.shutdown
+                    });
+                    Console.WriteLine(new string[]
+                    {
+                        "EVENT: User press CTRL-C, CTRL-BREAK or close window...",
+                        "EVENT: System shutdown or logoff..."
+                    }[shutdown_index]);
+
+
+                    // TODO: 服務即將終止。移除註冊資訊的相關程式碼可以放在這裡。
+#if (DEMO)
+                    Console.WriteLine($"DEMO:  Deregister Services Here!!");
+#else
+                    consul.Agent.ServiceDeregister(serviceID).Wait();
+#endif
 
                     stop = true;
-                    #endregion
-
-                    // ServiceDiscovery.UnRegister()
-                    consul.Agent.ServiceDeregister(serviceID).Wait();
-
+                    heartbeats.Wait();
+                    
+                    
+                    
                     // wait 5 sec and shutdown owin host
+                    Console.WriteLine($"DEMO:  Wait 5 sec and stop web self-host.");
                     Task.Delay(5000).Wait();
+                    Console.WriteLine($"DEMO:  web self-host stopped.");
                 }
             }
+
+#region init windows shutdown handler
+            SetConsoleCtrlHandler(ShutdownHandler, false);
+            _form.Close();
+#endregion
         }
+
+        #region shutdown event handler
+        private static ManualResetEvent close = new ManualResetEvent(false);
+
+        [DllImport("Kernel32")]
+        static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
+
+        delegate bool EventHandler(CtrlType sig);
+        enum CtrlType
+        {
+            CTRL_C_EVENT = 0,
+            CTRL_BREAK_EVENT = 1,
+            CTRL_CLOSE_EVENT = 2,
+            CTRL_LOGOFF_EVENT = 5,
+            CTRL_SHUTDOWN_EVENT = 6
+        }
+        private static bool ShutdownHandler(CtrlType sig)
+        {
+            close.Set();
+            Console.WriteLine($"EVENT: ShutdownHandler({sig})");
+            return true;
+        }
+
+        private static HiddenForm _form = null;
+        #endregion
+
     }
 
     public class Startup
@@ -261,33 +317,33 @@ namespace IP2C.WebAPI.SelfHost
         }
     }
 
-    //public class MyNewAssembliesResolver : DefaultAssembliesResolver
-    //{
-    //    public override ICollection<Assembly> GetAssemblies()
-    //    {
-    //        Console.WriteLine($"Force load type: {typeof(IP2CController)}");
-    //        return base.GetAssemblies();
+    public class MyNewAssembliesResolver : DefaultAssembliesResolver
+    {
+        public override ICollection<Assembly> GetAssemblies()
+        {
+            Console.WriteLine($"Force load type: {typeof(IP2CController)}");
+            return base.GetAssemblies();
 
-    //        ICollection<Assembly> baseAssemblies = base.GetAssemblies();
-    //        baseAssemblies.Clear();
-    //        List<Assembly> assemblies = new List<Assembly>(baseAssemblies);
+            ICollection<Assembly> baseAssemblies = base.GetAssemblies();
+            baseAssemblies.Clear();
+            List<Assembly> assemblies = new List<Assembly>(baseAssemblies);
 
-    //        List<Type> controllers = new List<Type>()
-    //        {
-    //            typeof(IP2C.WebAPI.Controllers.IP2CController),
-    //            typeof(IP2C.WebAPI.Controllers.DiagController)
-    //        };
+            List<Type> controllers = new List<Type>()
+            {
+                typeof(IP2C.WebAPI.Controllers.IP2CController),
+                typeof(IP2C.WebAPI.Controllers.DiagController)
+            };
 
-    //        foreach (var controller in controllers)
-    //        {
-    //            var controllersAssembly = controller.Assembly; // Assembly.LoadFrom(@"Path_to_Controller_DLL");
-    //            if (baseAssemblies.Contains(controllersAssembly) == true) continue;
-    //            baseAssemblies.Add(controllersAssembly);
-    //        }
+            foreach (var controller in controllers)
+            {
+                var controllersAssembly = controller.Assembly; // Assembly.LoadFrom(@"Path_to_Controller_DLL");
+                if (baseAssemblies.Contains(controllersAssembly) == true) continue;
+                baseAssemblies.Add(controllersAssembly);
+            }
 
-    //        return baseAssemblies;
+            return baseAssemblies;
 
-    //    }
-    //}
+        }
+    }
 
 }

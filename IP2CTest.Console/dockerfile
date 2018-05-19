@@ -4,6 +4,6 @@ WORKDIR   c:/IP2C.Console
 COPY . .
 
 
-ENV CONSUL_URL=http://172.18.240.2:8500
+ENV CONSUL_URL=http://consul:8500
 
 ENTRYPOINT IP2CTest.Console.exe -consul %CONSUL_URL%
