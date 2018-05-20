@@ -277,6 +277,15 @@ namespace IP2C.WebAPI.SelfHost
         {
             close.Set();
             Console.WriteLine($"EVENT: ShutdownHandler({sig})");
+
+            //System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            //while (true)
+            //{
+            //    timer.Restart();
+            //    while (timer.ElapsedMilliseconds < 100) Thread.SpinWait(10000);
+            //    Console.WriteLine("---");
+            //}
+
             return true;
         }
 

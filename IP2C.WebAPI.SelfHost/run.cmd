@@ -2,11 +2,11 @@ docker rm -f demo
 : docker pull wcshub.azurecr.io/ip2c.webapi.selfhost:demo
 docker run -d --name demo wcshub.azurecr.io/ip2c.webapi.selfhost:demo
 
-powershell sleep 10
+powershell sleep 5
 
 docker logs -t demo
-docker stop demo
+docker stop -t 30 demo
 
-powershell sleep 5
+powershell sleep 3
 
 docker logs -t demo

@@ -36,6 +36,14 @@ namespace IP2C.WebAPI.SelfHost
                 // max: 10 sec
                 while (this._form_closing == false) Thread.SpinWait(100);
 
+                //System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+                //while (true)
+                //{
+                //    timer.Restart();
+                //    while(timer.ElapsedMilliseconds < 100) Thread.SpinWait(10000);
+                //    Console.WriteLine("...");
+                //}
+
                 return;
             }
 
