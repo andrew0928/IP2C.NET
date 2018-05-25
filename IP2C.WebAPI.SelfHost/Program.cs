@@ -1,4 +1,4 @@
-﻿#define DEMO
+﻿//#define DEMO
 
 using Consul;
 using IP2C.WebAPI.Controllers;
@@ -151,15 +151,21 @@ namespace IP2C.WebAPI.SelfHost
                 using (ConsulClient consul = new ConsulClient(c => { if (!string.IsNullOrEmpty(consulAddress)) c.Address = new Uri(consulAddress); }))
                 {
 
-#region register services
+                    #region register services
 #if (DEMO)
                     Console.WriteLine($"DEMO:  Register Services Here!");
 #else
+                    Uri baseUri = new Uri(baseAddress);
                     consul.Agent.ServiceRegister(new AgentServiceRegistration()
                     {
                         Name = "IP2CAPI",
                         ID = serviceID,
-                        Address = baseAddress,
+                        Address = baseUri.Host,
+                        Port = baseUri.Port,
+                        Tags = new string[]
+                        {
+                            baseAddress
+                        },
                         Checks = new AgentServiceCheck[]
                         {
                             new AgentServiceCheck()

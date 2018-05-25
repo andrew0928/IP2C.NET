@@ -1,4 +1,7 @@
-FROM microsoft/windowsservercore:1709
+#FROM microsoft/windowsservercore:1709
+FROM microsoft/windowsservercore:1803
+
+ENV CONSUL_UI_BETA=1
 
 WORKDIR consul
 

@@ -3,6 +3,8 @@ services:
 
   consul:
     image: wcshub.azurecr.io/ip2c.consul:latest
+    ports:
+      - "8500:8500"
 
   webapi:
     image: wcshub.azurecr.io/ip2c.webapi.selfhost:latest

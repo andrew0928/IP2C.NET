@@ -143,9 +143,11 @@ namespace IP2C.SDK
 
                 Random rnd = new Random();
                 int index = rnd.Next(list.Count);
+
+                Console.WriteLine($"connect to: {list[index].Service.Address}:{list[index].Service.Port}");
                 return new HttpClient()
                 {
-                    BaseAddress = new Uri(list[index].Service.Address) //new Uri($"http://{list[index].Service.Address}:{list[index].Service.Port}")
+                    BaseAddress = new Uri($"http://{list[index].Service.Address}:{list[index].Service.Port}/") //new Uri($"http://{list[index].Service.Address}:{list[index].Service.Port}")
                 };
             }
         }

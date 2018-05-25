@@ -32,7 +32,7 @@ namespace IP2CTest.Console
             }
             #endregion
             ServiceClient.Init(consulAddress);
-            Client _client = new Client(); //Client(new Uri(args[0]));
+            Client _client = new Client();// new Uri(args[0]));
 
             //Verirfy the result by result from ip2c.org
             var lines = File.ReadAllLines("TestIPs.txt");
