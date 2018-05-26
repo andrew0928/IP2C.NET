@@ -20,7 +20,13 @@ namespace IP2C.WebAPI.Controllers
             switch (action)
             {
                 case "datafile":
+                    //
+                    // TODO: 查詢 8.8.8.8 的地區是否是美國 (Google DNS) ?
+                    // TODO: 查詢 168.95.1.1 的地區是否是台灣 (Hinet DNS) ?
+                    //
                     return "OK";
+
+                    
             }
 
             return "NO-ACTION";
