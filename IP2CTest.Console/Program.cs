@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,25 +38,29 @@ namespace IP2CTest.Console
             //Verirfy the result by result from ip2c.org
             var lines = File.ReadAllLines("TestIPs.txt");
 
-            while(true)
-            foreach (var line in lines)
+            while (true)
             {
-                var p = line.Split(',');
-                if (string.IsNullOrEmpty(p[1])) p[1] = "--";
-
-                try
+                foreach (var line in lines)
                 {
-                    var result = _client.FindIPCountry(p[0]);
-                    System.Console.WriteLine($"Expect: {result.CountryCode}, Actual: {p[1]}, ServerInfo: {result.ServerInfo.ServerAddress}, {result.ServerInfo.Version}");
-                }
-                catch(Exception ex)
-                {
-                    System.Console.WriteLine($"Exception: {ex}");
-                }
+                    var p = line.Split(',');
+                    if (string.IsNullOrEmpty(p[1])) p[1] = "--";
 
-                Task.Delay(100).Wait();
+                    try
+                    {
+                        System.Console.WriteLine();
+                        var result = _client.FindIPCountry(p[0]);
+                        System.Console.WriteLine($"Expect: {result.CountryCode}, Actual: {p[1]}, ServerInfo: {result.ServerInfo.ServerAddress}, {result.ServerInfo.Version}");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Console.WriteLine($"Exception: {ex}");
+                        System.Console.WriteLine($"- Wait 5 sec...");
+                        Task.Delay(5000).Wait();
+                    }
+
+                    Task.Delay(1000).Wait();
+                }
             }
-
         }
     }
 }
