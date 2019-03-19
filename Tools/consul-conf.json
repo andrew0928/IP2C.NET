@@ -1,36 +1,16 @@
 {
-  "services": [
-  {
-    "id": "ms",
-    "name": "microsoft",
-    "tags": ["microsoft", "money", "enterprise"],
-    "address": "http://docs.microsoft.com/",
+  "service": {
+    "name": "notification_service",
     "port": 80,
-    "checks": [
-      {
-        "id": "chk1",
-        "name": "microsoft",
-        "service_id":"microsoft",
-        "http": "http://www.microsoft.com/",
-        "interval": "5s"
-      }
-    ]
-  },
-  {
-    "id": "git",
-    "name": "github",
-    "tags": ["git", "community", "opensource"],
-    "address": "http://github.com/",
-    "port": 80,
-    "checks": [
-      {
-        "id": "chk2",
-        "name": "github",
-        "service_id":"github",
-        "http": "http://github.com/",
-        "interval": "5s"
-      }
-    ]
+    "address": "notify.qa.91dev.tw",
+    "check": {
+      "http": "http://notify.qa.91dev.tw/_ah/health",
+      "interval": "10s"
+    },
+    "meta": {
+      "EndPoint": "http://notify.qa.91dev.tw",
+      "MessageBus": "amqp://lajrrrgx:iryiXevewd4sGt0GcB78Y1Jjkln9ezPz@lion.rmq.cloudamqp.com/lajrrrgx",
+      "S3bucket": "s3://91dev-notification-storage"
+    }
   }
-  ]
 }

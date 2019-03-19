@@ -1,8 +1,8 @@
 pushd .
 cd tools
 set CONSUL_UI_BETA=true
-start /min consul.exe agent --dev
-:: start /min consul.exe agent --dev --config-file consul-conf.json
+:: start /min consul.exe agent --dev
+start /min consul.exe agent --dev --config-file consul-conf.json
 cd ..
 popd
 

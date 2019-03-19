@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27428.2011
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IP2C.NET", "IP2C.NET\IP2C.NET.csproj", "{76630D12-8D83-4B59-B8D6-99F930C153E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IP2CTest", "IP2CTest\IP2CTest.csproj", "{474F91C5-E03E-47FF-8D78-522A8461F1FC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IP2C.WebAPI", "IP2C.WebAPI\IP2C.WebAPI.csproj", "{67ED0672-4A9D-45AF-8173-EC752CD8C099}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IP2C.Worker", "IP2C.Worker\IP2C.Worker.csproj", "{864A13D6-94DF-472B-B048-7755F6D09FD9}"
@@ -16,7 +14,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0ADF941-DD49-46DD-99BD-2B0B67B6A8F5}"
 	ProjectSection(SolutionItems) = preProject
 		build.cmd = build.cmd
-		docker-compose.yml = docker-compose.yml
+		docker-compose.consul.yml = docker-compose.consul.yml
+		docker-compose.proxy.yml = docker-compose.proxy.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -34,10 +33,6 @@ Global
 		{76630D12-8D83-4B59-B8D6-99F930C153E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76630D12-8D83-4B59-B8D6-99F930C153E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76630D12-8D83-4B59-B8D6-99F930C153E2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{474F91C5-E03E-47FF-8D78-522A8461F1FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{474F91C5-E03E-47FF-8D78-522A8461F1FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{474F91C5-E03E-47FF-8D78-522A8461F1FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{474F91C5-E03E-47FF-8D78-522A8461F1FC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{67ED0672-4A9D-45AF-8173-EC752CD8C099}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67ED0672-4A9D-45AF-8173-EC752CD8C099}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67ED0672-4A9D-45AF-8173-EC752CD8C099}.Release|Any CPU.ActiveCfg = Release|Any CPU

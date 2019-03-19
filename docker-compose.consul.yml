@@ -1,0 +1,28 @@
+version: '3'
+services:
+
+  consul:
+    image: 91app/demo.ip2c.consul:latest
+    ports:
+      - "8500:8500"
+
+  webapi:
+    image: 91app/demo.ip2c.webapi.selfhost:latest
+    environment:
+      - CONSUL_URL="http://consul:8500"
+      - NETWORK="0.0.0.0/0"
+    depends_on:
+      - consul
+
+  console:
+    image: 91app/demo.ip2c.console:latest
+    environment:
+      - CONSUL_URL="http://consul:8500"
+    depends_on:
+      - consul
+      - webapi
+
+networks:
+  default:
+    external:
+      name: nat
