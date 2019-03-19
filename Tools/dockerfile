@@ -1,5 +1,6 @@
 #FROM microsoft/windowsservercore:1709
-FROM microsoft/windowsservercore:1803
+#FROM microsoft/windowsservercore:1803
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
 ENV CONSUL_UI_BETA=1
 

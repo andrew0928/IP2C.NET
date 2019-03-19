@@ -8,11 +8,18 @@ services:
 
   webapi:
     image: 91app/demo.ip2c.webapi.selfhost:latest
+    volumes:
+      - ./data:c:/inetpub/wwwroot/app_data
     environment:
       - CONSUL_URL="http://consul:8500"
       - NETWORK="0.0.0.0/0"
     depends_on:
       - consul
+
+  worker:
+    image: 91app/demo.ip2c.worker:latest
+    volumes:
+      - ./data:c:/IP2C.Worker/data
 
   console:
     image: 91app/demo.ip2c.console:latest
