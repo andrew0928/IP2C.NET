@@ -95,12 +95,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HiddenForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="HiddenForm.Designer.cs">
-      <DependentUpon>HiddenForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

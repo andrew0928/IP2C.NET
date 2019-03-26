@@ -37,8 +37,10 @@ namespace IP2C.WebAPI.Controllers
                     ServerInfo = new GetResult_ServerInfo()
                     {
                         
-                        ClientAddress = "0.0.0.0", //System.Web.HttpContext.Current.Request.UserHostAddress,
-                        ServerAddress = "0.0.0.0", //System.Web.HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"],
+                        ClientAddress = 
+                            (System.Web.HttpContext.Current == null)?("0.0.0.0") : (System.Web.HttpContext.Current.Request.UserHostAddress),
+                        ServerAddress = 
+                            (System.Web.HttpContext.Current == null) ? ("0.0.0.0") : (System.Web.HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"]),
                         Version = this.GetType().Assembly.GetName().Version.ToString(),
                         QueryTime = DateTime.Now.ToString("s")
                     }

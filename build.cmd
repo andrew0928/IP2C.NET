@@ -1,5 +1,5 @@
 : configuration
-SET BUILD_VERSION=3.2.1
+SET BUILD_VERSION=3.2.2
 
 
 : init

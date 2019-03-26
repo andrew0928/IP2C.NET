@@ -49,7 +49,7 @@ namespace IP2CTest.Console
                     {
                         System.Console.WriteLine();
                         var result = _client.FindIPCountry(p[0]);
-                        System.Console.WriteLine($"Expect: {result.CountryCode}, Actual: {p[1]}, ServerInfo: {result.ServerInfo.ServerAddress}, {result.ServerInfo.Version}");
+                        System.Console.WriteLine($"Expect: {result.CountryCode}, Actual: {p[1]}, {result.ServerInfo.Version}");
                     }
                     catch (Exception ex)
                     {

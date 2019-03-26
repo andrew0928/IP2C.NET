@@ -120,20 +120,6 @@ namespace IP2C.WebAPI.SelfHost
             #region init windows shutdown handler
             SetConsoleCtrlHandler(ShutdownHandler, true);
 
-            _form = new HiddenForm()
-            {
-                ShowInTaskbar = false,
-                Visible = false,
-                WindowState = FormWindowState.Minimized
-            };
-
-            Task.Run(() =>
-            {
-                //Application.EnableVisualStyles();
-                //Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(_form);
-            });
-
             Console.WriteLine($"Press [CTRL-C] to exit WebAPI-SelfHost...");
             #endregion
 
@@ -142,19 +128,19 @@ namespace IP2C.WebAPI.SelfHost
             using (WebApp.Start<Startup>(baseAddress))
             {
                 Console.WriteLine($"WebApp Started.");
+                Console.WriteLine($"- consul address: {consulAddress}");
                 // TODO: 服務啟動完成。註冊的相關程式碼可以放在這裡。
 
 
                 string serviceID = $"IP2CAPI-{Guid.NewGuid():N}".ToUpper(); //Guid.NewGuid().ToString("N");
 
+
                 // ServiceDiscovery.Register()
                 using (ConsulClient consul = new ConsulClient(c => { if (!string.IsNullOrEmpty(consulAddress)) c.Address = new Uri(consulAddress); }))
                 {
 
-                    #region register services
-#if (DEMO)
-                    Console.WriteLine($"DEMO:  Register Services Here!");
-#else
+#region register services
+
                     Uri baseUri = new Uri(baseAddress);
                     consul.Agent.ServiceRegister(new AgentServiceRegistration()
                     {
@@ -174,82 +160,28 @@ namespace IP2C.WebAPI.SelfHost
                                 HTTP = $"{baseAddress}api/diag/echo/00000000",
                                 Interval = TimeSpan.FromSeconds(1.0)
                             },
-                            new AgentServiceCheck()
-                            {
-                                DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(30.0),
-                                TTL = TimeSpan.FromSeconds(5.0)
-                            }
+                            //new AgentServiceCheck()
+                            //{
+                            //    DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(30.0),
+                            //    TTL = TimeSpan.FromSeconds(5.0)
+                            //}
                         }
                     }).Wait();
-#endif
 
 #endregion
 
 
-#region send heartbeats to consul
-                    bool stop = false;
-                    Task heartbeats = Task.Run(() =>
-                    {
-#if (DEMO)
-                        Console.WriteLine($"DEMO:  Start eartbeats.");
-                        while(stop == false)
-                        {
-                            Task.Delay(1000).Wait();
-                            Console.WriteLine($"DEMO:  Send Heartbeats every 1000 ms here!!");
-                        }
-                        Console.WriteLine($"DEMO:  Stop Heartbeats.");
-#else
-                        IP2CController ip2c = new IP2CController();
-                        while (stop == false)
-                        {
-                            Task.Delay(1000).Wait();
-
-                            try
-                            {
-                                var result = ip2c.Get(0x08080808);
-                                if (result.CountryCode == "US")
-                                {
-                                    consul.Agent.PassTTL($"service:{serviceID}:2", $"self test pass.");
-                                }
-                                else
-                                {
-                                    consul.Agent.WarnTTL($"service:{serviceID}:2", $"self test fail. query 8.8.8.8, expected: US, actual: {result.CountryCode}({result.CountryName})");
-                                }
-                            }
-                            catch(Exception ex)
-                            {
-                                consul.Agent.FailTTL($"service:{serviceID}:2", $"self test error. exception: {ex}");
-                            }
-                        }
-#endif
-                    });
-#endregion
 
 
                     // wait until process shutdown (ctrl-c, or close window)
-                    int shutdown_index = WaitHandle.WaitAny(new WaitHandle[]
-                    {
-                        close,
-                        _form.shutdown
-                    });
-                    Console.WriteLine(new string[]
-                    {
-                        "EVENT: User press CTRL-C, CTRL-BREAK or close window...",
-                        "EVENT: System shutdown or logoff..."
-                    }[shutdown_index]);
+                    close.WaitOne();
+                    SetConsoleCtrlHandler(ShutdownHandler, false);
+
+                    Console.WriteLine("EVENT: System shutdown or logoff...");
 
 
                     // TODO: 服務即將終止。移除註冊資訊的相關程式碼可以放在這裡。
-#if (DEMO)
-                    Console.WriteLine($"DEMO:  Deregister Services Here!!");
-#else
                     consul.Agent.ServiceDeregister(serviceID).Wait();
-#endif
-
-                    stop = true;
-                    heartbeats.Wait();
-                    
-                    
                     
                     // wait 5 sec and shutdown owin host
                     Console.WriteLine($"DEMO:  Wait 5 sec and stop web self-host.");
@@ -258,10 +190,6 @@ namespace IP2C.WebAPI.SelfHost
                 }
             }
 
-#region init windows shutdown handler
-            SetConsoleCtrlHandler(ShutdownHandler, false);
-            _form.Close();
-#endregion
         }
 
         #region shutdown event handler
@@ -281,21 +209,12 @@ namespace IP2C.WebAPI.SelfHost
         }
         private static bool ShutdownHandler(CtrlType sig)
         {
-            close.Set();
             Console.WriteLine($"EVENT: ShutdownHandler({sig})");
 
-            //System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-            //while (true)
-            //{
-            //    timer.Restart();
-            //    while (timer.ElapsedMilliseconds < 100) Thread.SpinWait(10000);
-            //    Console.WriteLine("---");
-            //}
-
+            close.Set();
             return true;
         }
 
-        private static HiddenForm _form = null;
         #endregion
 
     }
@@ -332,33 +251,33 @@ namespace IP2C.WebAPI.SelfHost
         }
     }
 
-    public class MyNewAssembliesResolver : DefaultAssembliesResolver
-    {
-        public override ICollection<Assembly> GetAssemblies()
-        {
-            Console.WriteLine($"Force load type: {typeof(IP2CController)}");
-            return base.GetAssemblies();
+    //public class MyNewAssembliesResolver : DefaultAssembliesResolver
+    //{
+    //    public override ICollection<Assembly> GetAssemblies()
+    //    {
+    //        Console.WriteLine($"Force load type: {typeof(IP2CController)}");
+    //        return base.GetAssemblies();
 
-            ICollection<Assembly> baseAssemblies = base.GetAssemblies();
-            baseAssemblies.Clear();
-            List<Assembly> assemblies = new List<Assembly>(baseAssemblies);
+    //        ICollection<Assembly> baseAssemblies = base.GetAssemblies();
+    //        baseAssemblies.Clear();
+    //        List<Assembly> assemblies = new List<Assembly>(baseAssemblies);
 
-            List<Type> controllers = new List<Type>()
-            {
-                typeof(IP2C.WebAPI.Controllers.IP2CController),
-                typeof(IP2C.WebAPI.Controllers.DiagController)
-            };
+    //        List<Type> controllers = new List<Type>()
+    //        {
+    //            typeof(IP2C.WebAPI.Controllers.IP2CController),
+    //            typeof(IP2C.WebAPI.Controllers.DiagController)
+    //        };
 
-            foreach (var controller in controllers)
-            {
-                var controllersAssembly = controller.Assembly; // Assembly.LoadFrom(@"Path_to_Controller_DLL");
-                if (baseAssemblies.Contains(controllersAssembly) == true) continue;
-                baseAssemblies.Add(controllersAssembly);
-            }
+    //        foreach (var controller in controllers)
+    //        {
+    //            var controllersAssembly = controller.Assembly; // Assembly.LoadFrom(@"Path_to_Controller_DLL");
+    //            if (baseAssemblies.Contains(controllersAssembly) == true) continue;
+    //            baseAssemblies.Add(controllersAssembly);
+    //        }
 
-            return baseAssemblies;
+    //        return baseAssemblies;
 
-        }
-    }
+    //    }
+    //}
 
 }

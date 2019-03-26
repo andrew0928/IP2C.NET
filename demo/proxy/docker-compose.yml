@@ -1,0 +1,24 @@
+version: '3'
+services:
+
+  proxy:
+    image: 91app/demo.ip2c.proxy:latest
+    ports:
+      - "80:80"
+
+  webapi:
+    image: 91app/demo.ip2c.webapi:latest
+    volumes:
+      - ./data:c:/inetpub/wwwroot/app_data
+    depends_on:
+      - proxy
+
+  worker:
+    image: 91app/demo.ip2c.worker:latest
+    volumes:
+      - ./data:c:/IP2C.Worker/data
+
+networks:
+  default:
+    external:
+      name: nat
